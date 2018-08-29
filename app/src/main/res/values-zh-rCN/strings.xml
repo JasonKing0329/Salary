@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- public -->
+    <string name="back">返回</string>
+    <string name="action_settings">设置</string>
+    <string name="save">保存</string>
+    <string name="no_content">无内容</string>
+    <string name="save_success">保存成功</string>
+    <string name="option">提示</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
+    <string name="allno">全部否</string>
+    <string name="ok">确定</string>
+    <string name="giveup">放弃</string>
+    <string name="cancel">取消</string>
+    <string name="loading">加载中&#8230;</string>
+    <string name="create_folder">创建目录</string>
+    <string name="warning">警告</string>
+    <string name="select_all">全选</string>
+    <string name="unselect_all">取消全选</string>
+    <string name="success">成功</string>
+    <string name="failed">失败</string>
+    <string name="delete">删除</string>
+
+    <string name="login_start_service_insert">是否打开资源管理界面？</string>
+</resources>
