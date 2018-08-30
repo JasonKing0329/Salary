@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import com.king.app.salary.conf.AppConfig;
 import com.king.app.salary.model.entity.DaoMaster;
 import com.king.app.salary.model.entity.DaoSession;
+import com.king.app.salary.model.entity.SalaryDao;
+import com.king.app.salary.model.entity.SalaryDetailDao;
 import com.king.app.salary.utils.DebugLog;
 
 import org.greenrobot.greendao.database.Database;
@@ -80,7 +82,20 @@ public class SalaryApplication extends Application {
             DebugLog.e(" oldVersion=" + oldVersion + ", newVersion=" + newVersion);
             switch (oldVersion) {
                 case 1:
+                    addColumn(db, SalaryDetailDao.TABLENAME, SalaryDetailDao.Properties.ExtraDrop.columnName, "INTEGER", 0);
+                    addColumn(db, SalaryDetailDao.TABLENAME, SalaryDetailDao.Properties.ExtraRaise.columnName, "INTEGER", 0);
+                    addColumn(db, SalaryDetailDao.TABLENAME, SalaryDetailDao.Properties.ExtraDropDesc.columnName, "TEXT", null);
+                    addColumn(db, SalaryDetailDao.TABLENAME, SalaryDetailDao.Properties.ExtraRaiseDesc.columnName, "TEXT", null);
                     break;
+            }
+        }
+
+        private void addColumn(Database db, String table, String columnName, String type, Object defaultValue) {
+            if (defaultValue == null) {
+                db.execSQL("ALTER TABLE " + table + " ADD COLUMN " + columnName + " " + type);
+            }
+            else {
+                db.execSQL("ALTER TABLE " + table + " ADD COLUMN " + columnName + " " + type + " DEFAULT " + defaultValue.toString());
             }
         }
     }

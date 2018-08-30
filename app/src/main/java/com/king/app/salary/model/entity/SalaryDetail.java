@@ -40,6 +40,12 @@ public class SalaryDetail {
     // 防暑降温/采暖补贴
     private float allowanceSeason;
 
+    // 其他补贴
+    private float extraRaise;
+
+    // 其他补贴说明
+    private String extraRaiseDesc;
+
     // 事假\病假扣款\旷工
     private float absence;
 
@@ -64,16 +70,23 @@ public class SalaryDetail {
     // 公积金
     private float housingFund;
 
+    // 其他扣款
+    private float extraDrop;
+
+    // 其他扣款说明
+    private String extraDropDesc;
+
     // 实发总额（不算补贴）
     private float receiveAllowanceLess;
 
-    @Generated(hash = 410953546)
+    @Generated(hash = 2029226638)
     public SalaryDetail(Long id, float basic, float tech, float performance,
             float supply, float overtime, float allowancePhone, float allowanceFood,
-            float allowanceSeason, float absence, float tax, float totalToTax,
-            float insurancePension, float insuranceJobless, float insuranceHealth,
-            float insuranceHugeMedical, float housingFund,
-            float receiveAllowanceLess) {
+            float allowanceSeason, float extraRaise, String extraRaiseDesc,
+            float absence, float tax, float totalToTax, float insurancePension,
+            float insuranceJobless, float insuranceHealth,
+            float insuranceHugeMedical, float housingFund, float extraDrop,
+            String extraDropDesc, float receiveAllowanceLess) {
         this.id = id;
         this.basic = basic;
         this.tech = tech;
@@ -83,6 +96,8 @@ public class SalaryDetail {
         this.allowancePhone = allowancePhone;
         this.allowanceFood = allowanceFood;
         this.allowanceSeason = allowanceSeason;
+        this.extraRaise = extraRaise;
+        this.extraRaiseDesc = extraRaiseDesc;
         this.absence = absence;
         this.tax = tax;
         this.totalToTax = totalToTax;
@@ -91,6 +106,8 @@ public class SalaryDetail {
         this.insuranceHealth = insuranceHealth;
         this.insuranceHugeMedical = insuranceHugeMedical;
         this.housingFund = housingFund;
+        this.extraDrop = extraDrop;
+        this.extraDropDesc = extraDropDesc;
         this.receiveAllowanceLess = receiveAllowanceLess;
     }
 
@@ -241,4 +258,37 @@ public class SalaryDetail {
     public void setReceiveAllowanceLess(float receiveAllowanceLess) {
         this.receiveAllowanceLess = receiveAllowanceLess;
     }
+
+    public float getExtraDrop() {
+        return this.extraDrop;
+    }
+
+    public void setExtraDrop(float extraDrop) {
+        this.extraDrop = extraDrop;
+    }
+
+    public String getExtraDropDesc() {
+        return this.extraDropDesc;
+    }
+
+    public void setExtraDropDesc(String extraDropDesc) {
+        this.extraDropDesc = extraDropDesc;
+    }
+
+    public float getExtraRaise() {
+        return this.extraRaise;
+    }
+
+    public void setExtraRaise(float extraRaise) {
+        this.extraRaise = extraRaise;
+    }
+
+    public String getExtraRaiseDesc() {
+        return this.extraRaiseDesc;
+    }
+
+    public void setExtraRaiseDesc(String extraRaiseDesc) {
+        this.extraRaiseDesc = extraRaiseDesc;
+    }
+
 }

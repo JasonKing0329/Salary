@@ -3,6 +3,7 @@ package com.king.app.salary.page.salary;
 import android.app.Application;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.king.app.salary.base.BaseViewModel;
 import com.king.app.salary.model.entity.Salary;
@@ -11,6 +12,7 @@ import com.king.app.salary.model.entity.SalaryDetailDao;
 import com.king.app.salary.model.repository.SalaryRepository;
 import com.king.app.salary.utils.FormatUtil;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,10 +42,13 @@ public class SalaryListViewModel extends BaseViewModel {
 
     private Map<Long, Boolean> mCheckMap;
 
+    private SimpleDateFormat dateFormat;
+
     public SalaryListViewModel(@NonNull Application application) {
         super(application);
         repository = new SalaryRepository();
         mCheckMap = new HashMap<>();
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     }
 
     public Map<Long, Boolean> getCheckMap() {
@@ -111,7 +116,7 @@ public class SalaryListViewModel extends BaseViewModel {
         item.setDeduction("-" + FormatUtil.formatPrice(salary.getDeduction()));
         item.setMonth(salary.getMonth() +"月");
         if (salary.getCompany() != null) {
-            item.setCompany(salary.getCompany().getName());
+            item.setCompany(salary.getCompany().getName() + " " + dateFormat.format(salary.getDate()));
         }
         if (salary.getDetail() != null) {
             item.setGroup("岗位" + getDisplayMoney(salary.getDetail().getBasic()) +" + 技能" + getDisplayMoney(salary.getDetail().getTech())
@@ -144,7 +149,10 @@ public class SalaryListViewModel extends BaseViewModel {
                 buffer.append(" 事假/病假扣款/旷工").append(getDisplayMoney(salary.getDetail().getAbsence()));
             }
             if (salary.getDetail().getTax() > 0) {
-                buffer.append(" 个税，应纳税工资总额").append(getDisplayMoney(salary.getDetail().getTotalToTax())).append(",").append(getDisplayMoney(salary.getDetail().getTax()));
+                buffer.append(" 个税").append(getDisplayMoney(salary.getDetail().getTax()));
+            }
+            if (salary.getDetail().getTax() > 0) {
+                buffer.append(" 应纳税工资总额").append(getDisplayMoney(salary.getDetail().getTotalToTax()));
             }
             if (salary.getDetail().getInsurancePension() > 0) {
                 buffer.append(" 养老保险").append(getDisplayMoney(salary.getDetail().getInsurancePension()));
@@ -160,6 +168,15 @@ public class SalaryListViewModel extends BaseViewModel {
             }
             if (salary.getDetail().getInsuranceHugeMedical() > 0) {
                 buffer.append(" 大额医疗").append(getDisplayMoney(salary.getDetail().getInsuranceHugeMedical()));
+            }
+            if (salary.getDetail().getExtraDrop() > 0) {
+                if (TextUtils.isEmpty(salary.getDetail().getExtraDropDesc())) {
+                    buffer.append(" 其他");
+                }
+                else {
+                    buffer.append(" ").append(salary.getDetail().getExtraDropDesc());
+                }
+                buffer.append(getDisplayMoney(salary.getDetail().getExtraDrop()));
             }
             String minus = buffer.toString();
             if (minus.length() > 1) {

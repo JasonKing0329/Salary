@@ -1,11 +1,13 @@
 package com.king.app.salary.page.salary;
 
+import android.graphics.Color;
 import android.view.View;
 
 import com.king.app.salary.R;
 import com.king.app.salary.base.adapter.HeadChildBindingAdapter;
 import com.king.app.salary.databinding.AdapterSalaryDetailBinding;
 import com.king.app.salary.databinding.AdapterSalaryTitleBinding;
+import com.king.app.salary.model.params.SalaryType;
 import com.king.app.salary.page.salary.SalaryDetailViewItem;
 import com.king.app.salary.page.salary.SalaryTitle;
 
@@ -63,6 +65,20 @@ public class SalaryDetailAdapter extends HeadChildBindingAdapter<AdapterSalaryTi
         }
         else {
             binding.cbCheck.setChecked(true);
+        }
+
+        binding.tvDeduction.setVisibility(item.getSalary().getDeduction() == 0 ? View.GONE:View.VISIBLE);
+
+        if (item.getSalary().getType() == SalaryType.BONUS.ordinal()) {
+            binding.getRoot().setBackgroundColor(Color.parseColor("#f9ebed"));
+            binding.llAdd.setVisibility(View.GONE);
+            binding.tvGroup.setVisibility(View.GONE);
+
+        }
+        else {
+            binding.getRoot().setBackgroundColor(Color.WHITE);
+            binding.llAdd.setVisibility(View.VISIBLE);
+            binding.tvGroup.setVisibility(View.VISIBLE);
         }
     }
 

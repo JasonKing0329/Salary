@@ -21,8 +21,7 @@ public class SalaryRepository extends BaseRepository {
     public Observable<List<Salary>> getSalaries() {
         return Observable.create(e -> {
             QueryBuilder<Salary> builder = getDaoSession().getSalaryDao().queryBuilder();
-            builder.orderDesc(SalaryDao.Properties.Year);
-            builder.orderDesc(SalaryDao.Properties.Month);
+            builder.orderDesc(SalaryDao.Properties.Date);
             e.onNext(builder.build().list());
         });
     }

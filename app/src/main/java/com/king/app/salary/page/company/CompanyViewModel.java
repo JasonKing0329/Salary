@@ -88,7 +88,7 @@ public class CompanyViewModel extends BaseViewModel {
                 CompanyItem item = new CompanyItem();
                 item.setCompany(company);
                 item.setName(company.getName());
-                item.setIndex(String.valueOf(result.size() - i));
+                item.setIndex(String.valueOf(list.size() - i));
                 item.setPlace(company.getCity() + "/" + company.getDistrict());
                 if (company.getExitDate() == null) {
                     item.setDate(dateFormat.format(company.getEnterDate()) + " To Now");

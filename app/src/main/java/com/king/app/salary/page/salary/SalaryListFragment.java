@@ -9,8 +9,11 @@ import android.view.View;
 import com.king.app.salary.R;
 import com.king.app.salary.base.IFragmentHolder;
 import com.king.app.salary.base.MvvmFragment;
+import com.king.app.salary.base.adapter.HeadChildBindingAdapter;
 import com.king.app.salary.databinding.FragmentSalaryListBinding;
+import com.king.app.salary.model.entity.Salary;
 import com.king.app.salary.utils.ScreenUtils;
+import com.king.app.salary.view.dialog.DraggableDialogFragment;
 
 import java.util.List;
 
@@ -74,6 +77,17 @@ public class SalaryListFragment extends MvvmFragment<FragmentSalaryListBinding, 
         if (salaryAdapter == null) {
             salaryAdapter = new SalaryDetailAdapter();
             salaryAdapter.setList(salaries);
+            salaryAdapter.setOnHeadChildListener(new HeadChildBindingAdapter.OnHeadChildListener<SalaryTitle, SalaryDetailViewItem>() {
+                @Override
+                public void onClickHead(View view, int position, SalaryTitle item) {
+
+                }
+
+                @Override
+                public void onClickItem(View view, int position, SalaryDetailViewItem item) {
+                    editSalary(item.getSalary());
+                }
+            });
             salaryAdapter.setCheckMap(mModel.getCheckMap());
             mBinding.rvItems.setAdapter(salaryAdapter);
         }
@@ -81,6 +95,17 @@ public class SalaryListFragment extends MvvmFragment<FragmentSalaryListBinding, 
             salaryAdapter.setList(salaries);
             salaryAdapter.notifyDataSetChanged();
         }
+    }
+
+    private void editSalary(Salary salary) {
+        SalaryEditor editor = new SalaryEditor();
+        editor.setSalary(salary);
+        editor.setOnUpdateListener(result -> refresh());
+        DraggableDialogFragment dialogFragment = new DraggableDialogFragment();
+        dialogFragment.setTitle("Add salary");
+        dialogFragment.setMaxHeight(ScreenUtils.getScreenHeight() * 3 / 4);
+        dialogFragment.setContentFragment(editor);
+        dialogFragment.show(getChildFragmentManager(), "SalaryEditor");
     }
 
     public void refresh() {

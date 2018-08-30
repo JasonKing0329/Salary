@@ -111,10 +111,6 @@ public class CompanyEditor extends DraggableContentFragment<FragmentContentCompa
             showMessageShort("Please select enter date");
             return;
         }
-        if (TextUtils.isEmpty(mDateExit)) {
-            showMessageShort("Please select exit date");
-            return;
-        }
         if (mCompany == null) {
             mCompany = new Company();
         }
@@ -126,10 +122,12 @@ public class CompanyEditor extends DraggableContentFragment<FragmentContentCompa
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        try {
-            mCompany.setExitDate(dateFormat.parse(mDateExit));
-        } catch (ParseException e) {
-            e.printStackTrace();
+        if (!TextUtils.isEmpty(mDateExit)) {
+            try {
+                mCompany.setExitDate(dateFormat.parse(mDateExit));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
 
         mModel.insertOrUpdate(mCompany);

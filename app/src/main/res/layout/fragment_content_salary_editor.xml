@@ -45,6 +45,12 @@
                         android:paddingTop="10dp"
                         android:paddingBottom="10dp"/>
                 </LinearLayout>
+                <CheckBox
+                    android:id="@+id/cb_bonus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/add_salary_head_top"
+                    android:text="奖金"/>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -166,6 +172,26 @@
                         android:id="@+id/et_allowance_season"
                         style="@style/EtNumInputFixWidth"/>
                 </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/add_salary_item_top"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <TextView
+                        style="@style/TvAddSalaryTitle"
+                        android:text="其他"/>
+                    <EditText
+                        android:id="@+id/et_other_raise"
+                        style="@style/EtNumInputFixWidth"/>
+                    <EditText
+                        android:id="@+id/et_other_raise_desc"
+                        style="@style/EtInput"
+                        android:hint="其他补贴说明"
+                        android:textSize="14dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_width="match_parent"/>
+                </LinearLayout>
 
                 <TextView
                     style="@style/TvAddSalaryHead"
@@ -256,6 +282,26 @@
                     <EditText
                         android:id="@+id/et_absence"
                         style="@style/EtNumInputFixWidth"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/add_salary_item_top"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <TextView
+                        style="@style/TvAddSalaryTitle"
+                        android:text="其他"/>
+                    <EditText
+                        android:id="@+id/et_other_drop"
+                        style="@style/EtNumInputFixWidth"/>
+                    <EditText
+                        android:id="@+id/et_other_drop_desc"
+                        style="@style/EtInput"
+                        android:hint="其他扣款说明"
+                        android:textSize="14dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_width="match_parent"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"

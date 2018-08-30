@@ -3,6 +3,7 @@ package com.king.app.salary.page.salary;
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.widget.EditText;
 
 import com.chenenyu.router.Router;
@@ -11,6 +12,7 @@ import com.king.app.salary.base.IFragmentHolder;
 import com.king.app.salary.databinding.FragmentContentSalaryEditorBinding;
 import com.king.app.salary.model.entity.Salary;
 import com.king.app.salary.model.entity.SalaryDetail;
+import com.king.app.salary.model.params.SalaryType;
 import com.king.app.salary.page.company.CompanyActivity;
 import com.king.app.salary.utils.FormatUtil;
 import com.king.app.salary.view.dialog.DatePickerFragment;
@@ -19,6 +21,7 @@ import com.king.app.salary.view.dialog.DraggableContentFragment;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Desc:
@@ -60,7 +63,7 @@ public class SalaryEditor extends DraggableContentFragment<FragmentContentSalary
     @Override
     protected void initView() {
         mModel = ViewModelProviders.of(this).get(SalaryEditorViewModel.class);
-        dateFormat = new SimpleDateFormat("yyyy-MM");
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         mBinding.tvCompany.setOnClickListener(view -> selectCompany());
         mBinding.tvOk.setOnClickListener(view -> onSave());
@@ -70,16 +73,20 @@ public class SalaryEditor extends DraggableContentFragment<FragmentContentSalary
                 picker.setDate(dateFormat.format(mDate));
             }
             // DatePicker生成的month下标从0开始
-            picker.setOnDateSetListener((view1, year, month, dayOfMonth) -> updateDate(year, month));
+            picker.setOnDateSetListener((view1, year, month, dayOfMonth) -> updateDate(year, month, dayOfMonth));
             picker.show(getChildFragmentManager(), "DatePickerFragment");
         });
         
         if (mSalary != null) {
+            mBinding.cbBonus.setChecked(mSalary.getType() == SalaryType.BONUS.ordinal());
             mBinding.etReceive.setText(FormatUtil.formatFloat(mSalary.getReceive()));
             mBinding.etTotal.setText(FormatUtil.formatFloat(mSalary.getTotal()));
-            // 数据库里的month下标从1开始
-            updateDate(mSalary.getYear(), mSalary.getMonth() - 1);
+
+            mDate = mSalary.getDate();
+            mBinding.btnDate.setText(dateFormat.format(mDate));
+
             if (mSalary.getCompany() != null) {
+                mCompanyId = mSalary.getCompanyId();
                 mBinding.tvCompany.setText(mSalary.getCompany().getName());
             }
             if (mSalary.getDetail() != null) {
@@ -99,6 +106,15 @@ public class SalaryEditor extends DraggableContentFragment<FragmentContentSalary
                 mBinding.etInsuranceHugeMedical.setText(FormatUtil.formatFloat(mSalaryDetail.getInsuranceHugeMedical()));
                 mBinding.etInsurancePension.setText(FormatUtil.formatFloat(mSalaryDetail.getInsurancePension()));
                 mBinding.etHousingFund.setText(FormatUtil.formatFloat(mSalaryDetail.getHousingFund()));
+                mBinding.etReceiveAllowanceless.setText(FormatUtil.formatFloat(mSalaryDetail.getReceiveAllowanceLess()));
+                mBinding.etOtherRaise.setText(FormatUtil.formatFloat(mSalaryDetail.getExtraRaise()));
+                if (!TextUtils.isEmpty(mSalaryDetail.getExtraRaiseDesc())) {
+                    mBinding.etOtherRaiseDesc.setText(mSalaryDetail.getExtraRaiseDesc());
+                }
+                mBinding.etOtherDrop.setText(FormatUtil.formatFloat(mSalaryDetail.getExtraDrop()));
+                if (!TextUtils.isEmpty(mSalaryDetail.getExtraDropDesc())) {
+                    mBinding.etOtherDropDesc.setText(mSalaryDetail.getExtraDropDesc());
+                }
             }
         }
 
@@ -112,14 +128,15 @@ public class SalaryEditor extends DraggableContentFragment<FragmentContentSalary
     }
 
     /**
-     *
-     * @param year
+     *  @param year
      * @param month 下标从0开始
+     * @param dayOfMonth
      */
-    private void updateDate(int year, int month) {
+    private void updateDate(int year, int month, int dayOfMonth) {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
         mDate = calendar.getTime();
         mBinding.btnDate.setText(dateFormat.format(mDate));
     }
@@ -164,17 +181,21 @@ public class SalaryEditor extends DraggableContentFragment<FragmentContentSalary
         if (mSalaryDetail == null) {
             mSalaryDetail = new SalaryDetail();
         }
+        mSalary.setType(mBinding.cbBonus.isChecked() ? SalaryType.BONUS.ordinal():SalaryType.NORMAL.ordinal());
         mSalary.setReceive(getFloat(mBinding.etReceive));
         mSalary.setTotal(getFloat(mBinding.etTotal));
-        Calendar calendar = Calendar.getInstance();
+        mSalary.setDate(mDate);
+        // 一般来说当前月发的是上个月的工资，目前仅考虑这种情况
+        GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTime(mDate);
-        mSalary.setYear(calendar.get(Calendar.YEAR));
-        mSalary.setMonth(calendar.get(Calendar.MONTH) + 1);
+        calendar.add(GregorianCalendar.MONTH, -1);
+        mSalary.setYear(calendar.get(GregorianCalendar.YEAR));
+        mSalary.setMonth(calendar.get(GregorianCalendar.MONTH) + 1);
         mSalary.setCompanyId(mCompanyId);
         mSalaryDetail.setBasic(getFloat(mBinding.etBasic));
         mSalaryDetail.setTech(getFloat(mBinding.etTech));
         mSalaryDetail.setPerformance(getFloat(mBinding.etPerformance));
-        mSalaryDetail.setSupply(getFloat(mBinding.etReceive));
+        mSalaryDetail.setSupply(getFloat(mBinding.etSupply));
         mSalaryDetail.setOvertime(getFloat(mBinding.etOvertime));
         mSalaryDetail.setAllowanceFood(getFloat(mBinding.etAllowanceFood));
         mSalaryDetail.setAllowancePhone(getFloat(mBinding.etAllowancePhone));
@@ -188,6 +209,10 @@ public class SalaryEditor extends DraggableContentFragment<FragmentContentSalary
         mSalaryDetail.setHousingFund(getFloat(mBinding.etHousingFund));
         mSalaryDetail.setAbsence(getFloat(mBinding.etAbsence));
         mSalaryDetail.setReceiveAllowanceLess(getFloat(mBinding.etReceiveAllowanceless));
+        mSalaryDetail.setExtraRaise(getFloat(mBinding.etOtherRaise));
+        mSalaryDetail.setExtraRaiseDesc(mBinding.etOtherRaiseDesc.getText().toString());
+        mSalaryDetail.setExtraDrop(getFloat(mBinding.etOtherDrop));
+        mSalaryDetail.setExtraDropDesc(mBinding.etOtherDropDesc.getText().toString());
 
         mSalary.setDeduction(mSalary.getTotal() - mSalary.getReceive());
 
