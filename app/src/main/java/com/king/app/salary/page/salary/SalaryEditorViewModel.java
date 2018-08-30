@@ -5,8 +5,10 @@ import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
 import com.king.app.salary.base.BaseViewModel;
+import com.king.app.salary.model.entity.Company;
 import com.king.app.salary.model.entity.Salary;
 import com.king.app.salary.model.entity.SalaryDetail;
+import com.king.app.salary.model.repository.CompanyRepository;
 import com.king.app.salary.model.repository.SalaryRepository;
 
 import io.reactivex.Observer;
@@ -23,6 +25,8 @@ import io.reactivex.schedulers.Schedulers;
 public class SalaryEditorViewModel extends BaseViewModel {
 
     public MutableLiveData<Salary> updateObserver = new MutableLiveData<>();
+
+    public MutableLiveData<Company> companyObserver = new MutableLiveData<>();
 
     private SalaryRepository repository;
 
@@ -61,5 +65,33 @@ public class SalaryEditorViewModel extends BaseViewModel {
 
                     }
                 });
+    }
+
+    public void loadCompany(long mCompanyId) {
+        new CompanyRepository().getCompany(mCompanyId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Observer<Company>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        addDisposable(d);
+                    }
+
+                    @Override
+                    public void onNext(Company company) {
+                        companyObserver.setValue(company);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
     }
 }

@@ -44,7 +44,7 @@ public abstract class BaseBindingAdapter<V extends ViewDataBinding, T> extends R
         BindingHolder holder = new BindingHolder(binding.getRoot());
         holder.itemView.setOnClickListener(v -> {
             int position = holder.getLayoutPosition();
-            onClickItem(v, position);
+            onClickItem(v, position, list.get(position));
         });
         if (onItemLongClickListener != null) {
             holder.itemView.setOnLongClickListener(v -> {
@@ -71,7 +71,7 @@ public abstract class BaseBindingAdapter<V extends ViewDataBinding, T> extends R
 
     protected abstract void onBindItem(V binding, int position, T bean);
 
-    protected void onClickItem(View v, int position) {
+    protected void onClickItem(View v, int position, T item) {
         if (onItemClickListener != null) {
             onItemClickListener.onClickItem(v, position, list.get(position));
         }

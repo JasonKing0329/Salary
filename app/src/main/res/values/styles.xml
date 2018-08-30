@@ -45,11 +45,14 @@
         <item name="colorControlActivated">@color/actionbar_element</item>
     </style>
 
-    <style name="EtNumInput">
+    <style name="EtInput">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">5dp</item>
         <item name="android:layout_marginLeft">10dp</item>
         <item name="android:background">@drawable/shape_edit_bg</item>
+    </style>
+
+    <style name="EtNumInput" parent="EtInput">
         <item name="android:inputType">numberDecimal</item>
     </style>
 

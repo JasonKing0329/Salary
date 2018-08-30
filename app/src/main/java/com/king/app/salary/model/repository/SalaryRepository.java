@@ -30,6 +30,7 @@ public class SalaryRepository extends BaseRepository {
     public Observable<Salary> insertOrUpdateSalary(Salary salary) {
         return Observable.create(e -> {
             getDaoSession().getSalaryDao().insertOrReplace(salary);
+            getDaoSession().getSalaryDao().detachAll();
             e.onNext(salary);
         });
     }
@@ -37,6 +38,7 @@ public class SalaryRepository extends BaseRepository {
     public Observable<SalaryDetail> insertOrUpdateSalaryDetail(SalaryDetail detail) {
         return Observable.create(e -> {
             getDaoSession().getSalaryDetailDao().insertOrReplace(detail);
+            getDaoSession().getSalaryDetailDao().detachAll();
             e.onNext(detail);
         });
     }

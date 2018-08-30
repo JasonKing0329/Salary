@@ -12,7 +12,8 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/white">
 
         <TextView
             android:id="@+id/tv_receive"
@@ -103,7 +104,7 @@
                 android:layout_marginLeft="8dp"
                 android:text="@{model.add}"
                 android:textColor="@color/text_sub"
-                android:textSize="14dp" />
+                android:textSize="12dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -130,7 +131,7 @@
                 android:layout_marginLeft="8dp"
                 android:text="@{model.minus}"
                 android:textColor="@color/text_sub"
-                android:textSize="14dp" />
+                android:textSize="12dp" />
         </LinearLayout>
 
         <TextView
@@ -147,5 +148,24 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ll_minus" />
 
+        <CheckBox
+            android:id="@+id/cb_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="2dp"
+            android:layout_marginTop="2dp"
+            android:clickable="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1px"
+            android:background="@color/divider"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
     </android.support.constraint.ConstraintLayout>
 </layout>

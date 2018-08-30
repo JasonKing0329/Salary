@@ -46,6 +46,7 @@
             android:theme="@style/AppTheme"
             android:label="@string/title_activity_settings"/>
         <activity android:name=".page.home.HomeActivity"/>
+        <activity android:name=".page.company.CompanyActivity"/>
     </application>
 
 </manifest>

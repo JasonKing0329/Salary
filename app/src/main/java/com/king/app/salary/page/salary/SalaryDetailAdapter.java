@@ -1,11 +1,15 @@
 package com.king.app.salary.page.salary;
 
+import android.view.View;
+
 import com.king.app.salary.R;
 import com.king.app.salary.base.adapter.HeadChildBindingAdapter;
 import com.king.app.salary.databinding.AdapterSalaryDetailBinding;
 import com.king.app.salary.databinding.AdapterSalaryTitleBinding;
 import com.king.app.salary.page.salary.SalaryDetailViewItem;
 import com.king.app.salary.page.salary.SalaryTitle;
+
+import java.util.Map;
 
 /**
  * Desc:
@@ -15,9 +19,24 @@ import com.king.app.salary.page.salary.SalaryTitle;
  */
 public class SalaryDetailAdapter extends HeadChildBindingAdapter<AdapterSalaryTitleBinding, AdapterSalaryDetailBinding, SalaryTitle, SalaryDetailViewItem> {
 
+    private boolean selectMode;
+
+    private Map<Long, Boolean> mCheckMap;
+
+    public void setSelectMode(boolean selectMode) {
+        this.selectMode = selectMode;
+        if (selectMode) {
+            mCheckMap.clear();
+        }
+    }
+
+    public void setCheckMap(Map<Long, Boolean> mCheckMap) {
+        this.mCheckMap = mCheckMap;
+    }
+
     @Override
     protected Class getItemClass() {
-        return SalaryTitle.class;
+        return SalaryDetailViewItem.class;
     }
 
     @Override
@@ -38,5 +57,33 @@ public class SalaryDetailAdapter extends HeadChildBindingAdapter<AdapterSalaryTi
     @Override
     protected void onBindItem(AdapterSalaryDetailBinding binding, int position, SalaryDetailViewItem item) {
         binding.setModel(item);
+        binding.cbCheck.setVisibility(selectMode ? View.VISIBLE:View.GONE);
+        if (mCheckMap.get(item.getSalary().getId()) == null) {
+            binding.cbCheck.setChecked(false);
+        }
+        else {
+            binding.cbCheck.setChecked(true);
+        }
+    }
+
+    @Override
+    protected void onClickItem(View view, int position, SalaryDetailViewItem item) {
+        if (selectMode) {
+            Boolean check = mCheckMap.get(item.getSalary().getId());
+            if (check == null) {
+                mCheckMap.put(item.getSalary().getId(), true);
+            }
+            else {
+                mCheckMap.remove(item.getSalary().getId());
+            }
+            notifyItemChanged(position);
+        }
+        else {
+            super.onClickItem(view, position, item);
+        }
+    }
+
+    public boolean isHead(int position) {
+        return list.get(position) instanceof SalaryTitle;
     }
 }

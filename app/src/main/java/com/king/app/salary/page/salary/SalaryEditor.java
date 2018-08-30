@@ -1,15 +1,24 @@
 package com.king.app.salary.page.salary;
 
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.widget.EditText;
 
+import com.chenenyu.router.Router;
 import com.king.app.salary.R;
 import com.king.app.salary.base.IFragmentHolder;
 import com.king.app.salary.databinding.FragmentContentSalaryEditorBinding;
 import com.king.app.salary.model.entity.Salary;
 import com.king.app.salary.model.entity.SalaryDetail;
+import com.king.app.salary.page.company.CompanyActivity;
 import com.king.app.salary.utils.FormatUtil;
+import com.king.app.salary.view.dialog.DatePickerFragment;
 import com.king.app.salary.view.dialog.DraggableContentFragment;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Desc:
@@ -18,6 +27,8 @@ import com.king.app.salary.view.dialog.DraggableContentFragment;
  * @date: 2018/8/30 9:22
  */
 public class SalaryEditor extends DraggableContentFragment<FragmentContentSalaryEditorBinding> {
+
+    private final int REQUEST_SELECT_COMPANY = 601;
 
     private SalaryEditorViewModel mModel;
 
@@ -28,6 +39,13 @@ public class SalaryEditor extends DraggableContentFragment<FragmentContentSalary
     private OnUpdateListener onUpdateListener;
 
     private long mCompanyId;
+
+    private SimpleDateFormat dateFormat;
+
+    /**
+     * Calendar及DatePicker生成的month均为下标从0开始
+     */
+    private Date mDate;
 
     @Override
     protected void bindFragmentHolder(IFragmentHolder holder) {
@@ -42,14 +60,25 @@ public class SalaryEditor extends DraggableContentFragment<FragmentContentSalary
     @Override
     protected void initView() {
         mModel = ViewModelProviders.of(this).get(SalaryEditorViewModel.class);
+        dateFormat = new SimpleDateFormat("yyyy-MM");
 
         mBinding.tvCompany.setOnClickListener(view -> selectCompany());
         mBinding.tvOk.setOnClickListener(view -> onSave());
+        mBinding.btnDate.setOnClickListener(view -> {
+            DatePickerFragment picker = new DatePickerFragment();
+            if (mDate != null) {
+                picker.setDate(dateFormat.format(mDate));
+            }
+            // DatePicker生成的month下标从0开始
+            picker.setOnDateSetListener((view1, year, month, dayOfMonth) -> updateDate(year, month));
+            picker.show(getChildFragmentManager(), "DatePickerFragment");
+        });
         
         if (mSalary != null) {
             mBinding.etReceive.setText(FormatUtil.formatFloat(mSalary.getReceive()));
             mBinding.etTotal.setText(FormatUtil.formatFloat(mSalary.getTotal()));
-            mBinding.spMonth.setSelection(mSalary.getMonth() - 1);
+            // 数据库里的month下标从1开始
+            updateDate(mSalary.getYear(), mSalary.getMonth() - 1);
             if (mSalary.getCompany() != null) {
                 mBinding.tvCompany.setText(mSalary.getCompany().getName());
             }
@@ -73,12 +102,26 @@ public class SalaryEditor extends DraggableContentFragment<FragmentContentSalary
             }
         }
 
+        mModel.companyObserver.observe(this, company -> mBinding.tvCompany.setText(company.getName()));
         mModel.updateObserver.observe(this, salary -> {
             if (onUpdateListener != null) {
                 onUpdateListener.onUpdateSuccess(salary);
             }
             dismissAllowingStateLoss();
         });
+    }
+
+    /**
+     *
+     * @param year
+     * @param month 下标从0开始
+     */
+    private void updateDate(int year, int month) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
+        mDate = calendar.getTime();
+        mBinding.btnDate.setText(dateFormat.format(mDate));
     }
 
     public void setSalary(Salary salary) {
@@ -90,12 +133,29 @@ public class SalaryEditor extends DraggableContentFragment<FragmentContentSalary
     }
 
     private void selectCompany() {
-        
+        Router.build("Company")
+                .with(CompanyActivity.EXTRA_SELECT_COMPANY, true)
+                .requestCode(REQUEST_SELECT_COMPANY)
+                .go(this);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_SELECT_COMPANY) {
+            if (resultCode == Activity.RESULT_OK) {
+                mCompanyId = data.getLongExtra(CompanyActivity.RESP_COMPANY_ID, -1);
+                mModel.loadCompany(mCompanyId);
+            }
+        }
     }
 
     private void onSave() {
         if (mCompanyId == 0) {
             showMessageShort("Please select company");
+            return;
+        }
+        if (mDate == null) {
+            showMessageShort("Please select date");
             return;
         }
         if (mSalary == null) {
@@ -106,8 +166,14 @@ public class SalaryEditor extends DraggableContentFragment<FragmentContentSalary
         }
         mSalary.setReceive(getFloat(mBinding.etReceive));
         mSalary.setTotal(getFloat(mBinding.etTotal));
-        mSalary.setMonth(mBinding.spMonth.getSelectedItemPosition() + 1);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(mDate);
+        mSalary.setYear(calendar.get(Calendar.YEAR));
+        mSalary.setMonth(calendar.get(Calendar.MONTH) + 1);
         mSalary.setCompanyId(mCompanyId);
+        mSalaryDetail.setBasic(getFloat(mBinding.etBasic));
+        mSalaryDetail.setTech(getFloat(mBinding.etTech));
+        mSalaryDetail.setPerformance(getFloat(mBinding.etPerformance));
         mSalaryDetail.setSupply(getFloat(mBinding.etReceive));
         mSalaryDetail.setOvertime(getFloat(mBinding.etOvertime));
         mSalaryDetail.setAllowanceFood(getFloat(mBinding.etAllowanceFood));
@@ -122,6 +188,8 @@ public class SalaryEditor extends DraggableContentFragment<FragmentContentSalary
         mSalaryDetail.setHousingFund(getFloat(mBinding.etHousingFund));
         mSalaryDetail.setAbsence(getFloat(mBinding.etAbsence));
         mSalaryDetail.setReceiveAllowanceLess(getFloat(mBinding.etReceiveAllowanceless));
+
+        mSalary.setDeduction(mSalary.getTotal() - mSalary.getReceive());
 
         mModel.insertOrUpdate(mSalary, mSalaryDetail);
     }

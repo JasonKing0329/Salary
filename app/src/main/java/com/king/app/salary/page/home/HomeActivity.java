@@ -3,11 +3,14 @@ package com.king.app.salary.page.home;
 import android.arch.lifecycle.ViewModelProviders;
 
 import com.chenenyu.router.annotation.Route;
+import com.king.app.jactionbar.OnConfirmListener;
 import com.king.app.salary.R;
 import com.king.app.salary.base.MvvmActivity;
 import com.king.app.salary.databinding.ActivityHomeBinding;
 import com.king.app.salary.page.salary.SalaryEditor;
 import com.king.app.salary.page.salary.SalaryListFragment;
+import com.king.app.salary.page.salary.SalaryListHolder;
+import com.king.app.salary.utils.ScreenUtils;
 import com.king.app.salary.view.dialog.DraggableDialogFragment;
 
 /**
@@ -17,7 +20,7 @@ import com.king.app.salary.view.dialog.DraggableDialogFragment;
  * @date: 2018/8/29 17:20
  */
 @Route("Home")
-public class HomeActivity extends MvvmActivity<ActivityHomeBinding, HomeViewModel> {
+public class HomeActivity extends MvvmActivity<ActivityHomeBinding, HomeViewModel> implements SalaryListHolder {
 
     private SalaryListFragment ftSalaryList;
 
@@ -35,9 +38,38 @@ public class HomeActivity extends MvvmActivity<ActivityHomeBinding, HomeViewMode
                     addSalary();
                     break;
                 case R.id.menu_delete:
+                    ftSalaryList.setSelectionMode(true);
+                    mBinding.actionbar.showConfirmStatus(menuId);
                     break;
                 case R.id.menu_edit:
                     break;
+            }
+        });
+        mBinding.actionbar.setOnConfirmListener(new OnConfirmListener() {
+            @Override
+            public boolean disableInstantDismissConfirm() {
+                return true;
+            }
+
+            @Override
+            public boolean disableInstantDismissCancel() {
+                return false;
+            }
+
+            @Override
+            public boolean onConfirm(int actionId) {
+                switch (actionId) {
+                    case R.id.menu_delete:
+                        ftSalaryList.deleteSelectedItems();
+                        break;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onCancel(int actionId) {
+                ftSalaryList.setSelectionMode(false);
+                return true;
             }
         });
     }
@@ -60,7 +92,13 @@ public class HomeActivity extends MvvmActivity<ActivityHomeBinding, HomeViewMode
         editor.setOnUpdateListener(salary -> ftSalaryList.refresh());
         DraggableDialogFragment dialogFragment = new DraggableDialogFragment();
         dialogFragment.setTitle("Add salary");
+        dialogFragment.setMaxHeight(ScreenUtils.getScreenHeight() * 3 / 4);
         dialogFragment.setContentFragment(editor);
         dialogFragment.show(getSupportFragmentManager(), "SalaryEditor");
+    }
+
+    @Override
+    public void notifyDeleteFinished() {
+        mBinding.actionbar.cancelConfirmStatus();
     }
 }

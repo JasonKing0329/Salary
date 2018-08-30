@@ -27,7 +27,13 @@ public abstract class HeadChildBindingAdapter<VH extends ViewDataBinding, VI ext
         this.list = list;
     }
 
+    public OnHeadChildListener<H, I> onHeadChildListener;
+
     protected abstract Class getItemClass();
+
+    public void setOnHeadChildListener(OnHeadChildListener<H, I> onHeadChildListener) {
+        this.onHeadChildListener = onHeadChildListener;
+    }
 
     @Override
     public int getItemViewType(int position) {
@@ -44,13 +50,27 @@ public abstract class HeadChildBindingAdapter<VH extends ViewDataBinding, VI ext
             VH binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext())
                     , getHeaderRes(), parent, false);
             BindingHolder holder = new BindingHolder(binding.getRoot());
+            binding.getRoot().setOnClickListener(view -> onClickHead(view, holder.getLayoutPosition(), (H) list.get(holder.getLayoutPosition())));
             return holder;
         }
         else {
             VI binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext())
                     , getItemRes(), parent, false);
             BindingHolder holder = new BindingHolder(binding.getRoot());
+            binding.getRoot().setOnClickListener(view -> onClickItem(view, holder.getLayoutPosition(), (I) list.get(holder.getLayoutPosition())));
             return holder;
+        }
+    }
+
+    protected void onClickHead(View view, int position, H head) {
+        if (onHeadChildListener != null) {
+            onHeadChildListener.onClickHead(view, position, head);
+        }
+    }
+
+    protected void onClickItem(View view, int position, I item) {
+        if (onHeadChildListener != null) {
+            onHeadChildListener.onClickItem(view, position, item);
         }
     }
 
@@ -86,5 +106,10 @@ public abstract class HeadChildBindingAdapter<VH extends ViewDataBinding, VI ext
         public BindingHolder(View itemView) {
             super(itemView);
         }
+    }
+
+    public interface OnHeadChildListener<H, I> {
+        void onClickHead(View view, int position, H item);
+        void onClickItem(View view, int position, I item);
     }
 }
