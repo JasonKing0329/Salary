@@ -126,13 +126,7 @@ public class LoginActivity extends MvvmActivity<ActivityLoginBinding, LoginViewM
     }
 
     private void goToHome() {
-//        if (ScreenUtils.isTablet()) {
-//            Router.build("HomePad").go(this);
-//            finish();
-//        }
-//        else {
-//            Router.build("Home").go(this);
-//            finish();
-//        }
+        Router.build("Home").go(this);
+        finish();
     }
 }

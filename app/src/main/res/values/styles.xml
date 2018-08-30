@@ -45,4 +45,40 @@
         <item name="colorControlActivated">@color/actionbar_element</item>
     </style>
 
+    <style name="EtNumInput">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:background">@drawable/shape_edit_bg</item>
+        <item name="android:inputType">numberDecimal</item>
+    </style>
+
+    <style name="EtNumInputFixWidth" parent="EtNumInput">
+        <item name="android:layout_width">80dp</item>
+    </style>
+
+    <style name="TvAddSalaryTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">14dp</item>
+        <item name="android:textColor">@color/text_sub</item>
+    </style>
+
+    <style name="TvAddSalaryHead">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:textColor">@color/text_main</item>
+    </style>
+
+    <style name="TvDialogBottomOk">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:text">@string/ok</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+    </style>
+
 </resources>
