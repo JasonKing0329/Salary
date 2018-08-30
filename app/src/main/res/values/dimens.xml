@@ -3,4 +3,5 @@
     <dimen name="add_salary_title_left">20dp</dimen>
     <dimen name="add_salary_head_top">10dp</dimen>
     <dimen name="add_salary_item_top">8dp</dimen>
+    <dimen name="salary_list_count_show_height">50dp</dimen>
 </resources>

@@ -48,6 +48,9 @@ public class SalaryListFragment extends MvvmFragment<FragmentSalaryListBinding, 
 
     @Override
     protected void onCreate(View view) {
+
+        mBinding.setModel(mModel);
+
         mBinding.rvItems.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         mBinding.rvItems.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
@@ -58,6 +61,12 @@ public class SalaryListFragment extends MvvmFragment<FragmentSalaryListBinding, 
                 }
                 else {
                     outRect.top = 0;
+                }
+                if (position == salaryAdapter.getItemCount() - 1) {
+                    outRect.bottom = getResources().getDimensionPixelSize(R.dimen.salary_list_count_show_height);
+                }
+                else {
+                    outRect.bottom = 0;
                 }
             }
         });

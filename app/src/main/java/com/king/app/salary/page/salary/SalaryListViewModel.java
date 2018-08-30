@@ -2,6 +2,7 @@ package com.king.app.salary.page.salary;
 
 import android.app.Application;
 import android.arch.lifecycle.MutableLiveData;
+import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
@@ -38,6 +39,9 @@ public class SalaryListViewModel extends BaseViewModel {
 
     public MutableLiveData<Boolean> deleteObserver = new MutableLiveData<>();
 
+    public ObservableField<String> countReceiveText = new ObservableField<>();
+    public ObservableField<String> countSubText = new ObservableField<>();
+
     private SalaryRepository repository;
 
     private Map<Long, Boolean> mCheckMap;
@@ -58,6 +62,7 @@ public class SalaryListViewModel extends BaseViewModel {
     public void loadSalary() {
         loadingObserver.setValue(true);
         repository.getSalaries()
+                .flatMap(list -> count(list))
                 .flatMap(list -> toViewItems(list))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -84,6 +89,26 @@ public class SalaryListViewModel extends BaseViewModel {
 
                     }
                 });
+    }
+
+    private ObservableSource<List<Salary>> count(List<Salary> list) {
+        return observer -> {
+            float sumReceive = 0;
+            float sumFund = 0;
+            float sumHealth = 0;
+            for (int i = 0; i < list.size(); i ++) {
+                Salary salary = list.get(i);
+                sumReceive += salary.getReceive();
+                if (salary.getDetail() != null) {
+                    sumFund += salary.getDetail().getHousingFund();
+                    sumHealth += salary.getDetail().getInsuranceHealth();
+                }
+            }
+            sumFund = sumFund * 2;
+            countReceiveText.set(FormatUtil.formatPrice(sumReceive));
+            countSubText.set("医保" + FormatUtil.formatPrice(sumHealth) + " 公积金" + FormatUtil.formatPrice(sumFund));
+            observer.onNext(list);
+        };
     }
 
     private ObservableSource<List<Object>> toViewItems(List<Salary> list) {
