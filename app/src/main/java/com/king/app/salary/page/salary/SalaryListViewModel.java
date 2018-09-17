@@ -116,12 +116,23 @@ public class SalaryListViewModel extends BaseViewModel {
             List<Object> results = new ArrayList<>();
             // list is already ordered by year
             int lastYear = 0;
+            SalaryTitle title = null;
             for (Salary salary:list) {
                 if (salary.getYear() != lastYear) {
-                    results.add(createTitle(salary.getYear()));
+                    // count for year
+                    if (title != null) {
+                        title.setTotalString(FormatUtil.formatPrice(title.getTotal()));
+                    }
+                    title = createTitle(salary.getYear());
+                    results.add(title);
                     lastYear = salary.getYear();
                 }
+                title.setTotal(title.getTotal() + salary.getReceive());
                 results.add(createDetailViewItem(salary));
+            }
+            // count for year
+            if (title != null) {
+                title.setTotalString(FormatUtil.formatPrice(title.getTotal()));
             }
             observer.onNext(results);
         };

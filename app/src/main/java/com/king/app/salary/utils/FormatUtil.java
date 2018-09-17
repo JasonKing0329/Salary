@@ -11,7 +11,7 @@ import java.text.NumberFormat;
  */
 public class FormatUtil {
 
-    public static String formatPrice(float number) {
+    public static String formatPrice(double number) {
         DecimalFormat df = new DecimalFormat("###,###,###,###");
         return "¥" + df.format(number);
     }
