@@ -6,6 +6,7 @@ import com.chenenyu.router.annotation.Route;
 import com.king.app.jactionbar.OnConfirmListener;
 import com.king.app.salary.R;
 import com.king.app.salary.base.MvvmActivity;
+import com.king.app.salary.base.SalaryApplication;
 import com.king.app.salary.databinding.ActivityHomeBinding;
 import com.king.app.salary.page.salary.SalaryEditor;
 import com.king.app.salary.page.salary.SalaryListFragment;
@@ -43,6 +44,12 @@ public class HomeActivity extends MvvmActivity<ActivityHomeBinding, HomeViewMode
                     break;
                 case R.id.menu_edit:
                     break;
+                case R.id.menu_load_from:
+                    showLoadFrom();
+                    break;
+                case R.id.menu_save:
+                    mModel.saveDatabase();
+                    break;
             }
         });
         mBinding.actionbar.setOnConfirmListener(new OnConfirmListener() {
@@ -72,6 +79,20 @@ public class HomeActivity extends MvvmActivity<ActivityHomeBinding, HomeViewMode
                 return true;
             }
         });
+    }
+
+    private void showLoadFrom() {
+        LoadFromFragment content = new LoadFromFragment();
+        content.setOnDatabaseChangedListener(() -> {
+            SalaryApplication.getInstance().reCreateGreenDao();
+            initData();
+        });
+        DraggableDialogFragment editDialog = new DraggableDialogFragment.Builder()
+                .setTitle("Load from")
+                .setShowDelete(false)
+                .setContentFragment(content)
+                .build();
+        editDialog.show(getSupportFragmentManager(), "LoadFromFragment");
     }
 
     @Override

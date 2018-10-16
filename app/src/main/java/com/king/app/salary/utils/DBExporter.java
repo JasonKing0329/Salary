@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
 
 public class DBExporter {
 	
@@ -21,6 +22,27 @@ public class DBExporter {
 		String targetPath = AppConfig.APP_DIR_EXPORT;
 		try {
 			DBExporter.copyDirectiory(dbPath, targetPath);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void exportAsHistory() {
+
+		String dbPath = SalaryApplication.getInstance().getFilesDir().getParent() + "/databases/" + AppConfig.DB_NAME;
+
+		Calendar calendar = Calendar.getInstance();
+		StringBuffer target = new StringBuffer();
+		target.append(AppConfig.APP_DIR_HISTORY).append("/roles_");
+		target.append(calendar.get(Calendar.YEAR)).append("_");
+		target.append(calendar.get(Calendar.MONTH) + 1).append("_");
+		target.append(calendar.get(Calendar.DAY_OF_MONTH)).append("_");
+		target.append(calendar.get(Calendar.HOUR)).append("_");
+		target.append(calendar.get(Calendar.MINUTE)).append("_");
+		target.append(calendar.get(Calendar.SECOND));
+		target.append(".db");
+		try {
+			copyFile(new File(dbPath), new File(target.toString()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
