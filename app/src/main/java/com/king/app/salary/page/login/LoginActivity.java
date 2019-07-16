@@ -2,21 +2,20 @@ package com.king.app.salary.page.login;
 
 import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.DialogInterface;
+import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 
 import com.chenenyu.router.Router;
 import com.king.app.salary.R;
 import com.king.app.salary.base.MvvmActivity;
 import com.king.app.salary.databinding.ActivityLoginBinding;
-import com.king.app.salary.model.FingerPrintController;
-import com.king.app.salary.view.dialog.SimpleDialogs;
+import com.king.app.salary.model.fingerprint.samsung.SamsungFingerPrint;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class LoginActivity extends MvvmActivity<ActivityLoginBinding, LoginViewModel> {
 
-    private FingerPrintController fingerPrint;
+    private SamsungFingerPrint fingerPrint;
 
     @Override
     protected int getContentView() {
@@ -32,20 +31,6 @@ public class LoginActivity extends MvvmActivity<ActivityLoginBinding, LoginViewM
                 superUser();
             }
         });
-    }
-
-    private void checkFingerprint() {
-        fingerPrint = new FingerPrintController(this);
-        if (fingerPrint.isSupported()) {
-            if (fingerPrint.hasRegistered()) {
-                startFingerPrintDialog();
-            } else {
-                showMessageLong("设备未注册指纹");
-            }
-            return;
-        } else {
-            showMessageLong("设备不支持指纹识别");
-        }
     }
 
     @Override
@@ -73,56 +58,71 @@ public class LoginActivity extends MvvmActivity<ActivityLoginBinding, LoginViewM
         mModel.initCreate();
     }
 
-    private void startFingerPrintDialog() {
-        if (fingerPrint.hasRegistered()) {
-            boolean withPW = false;
-            fingerPrint.showIdentifyDialog(withPW, new FingerPrintController.SimpleIdentifyListener() {
-
-                @Override
-                public void onSuccess() {
-                    superUser();
-                }
-
-                @Override
-                public void onFail() {
-
-                }
-
-                @Override
-                public void onCancel() {
-                    finish();
-                }
-            });
-        } else {
-            showMessageLong(getString(R.string.login_finger_not_register));
+    private void checkFingerprint() {
+        FingerprintManagerCompat compat = FingerprintManagerCompat.from(this);
+        if (compat.isHardwareDetected()) {
+            if (compat.hasEnrolledFingerprints()) {
+                startFingerPrintDialog();
+            }
+            else {
+                showMessageLong("设备未注册指纹");
+            }
+        }
+        else {
+            // 三星Tab S(Android6.0)有指纹识别，但是系统方法判断为没有，继续用三星的sdk操作
+            checkSamsungFingerprint();
         }
     }
 
+    private void checkSamsungFingerprint() {
+        fingerPrint = new SamsungFingerPrint(LoginActivity.this);
+        if (fingerPrint.isSupported()) {
+            if (fingerPrint.hasRegistered()) {
+                startSamsungFingerPrintDialog();
+            } else {
+                showMessageLong("设备未注册指纹");
+            }
+            return;
+        } else {
+            showMessageLong("设备不支持指纹识别");
+        }
+    }
+
+    /**
+     * 通用指纹识别对话框
+     */
+    private void startFingerPrintDialog() {
+        FingerprintDialog dialog = new FingerprintDialog();
+        dialog.setOnFingerPrintListener(() -> superUser());
+        dialog.show(getSupportFragmentManager(), "FingerprintDialog");
+    }
+
+    /**
+     * 三星指纹识别对话框
+     */
+    private void startSamsungFingerPrintDialog() {
+        boolean withPW = false;
+        fingerPrint.showIdentifyDialog(withPW, new SamsungFingerPrint.SimpleIdentifyListener() {
+
+            @Override
+            public void onSuccess() {
+                superUser();
+            }
+
+            @Override
+            public void onFail() {
+
+            }
+
+            @Override
+            public void onCancel() {
+                finish();
+            }
+        });
+    }
+
     private void superUser() {
-        new SimpleDialogs().showWarningActionDialog(this
-                , getResources().getString(R.string.login_start_service_insert)
-                , getResources().getString(R.string.yes)
-                , getResources().getString(R.string.no)
-                , getResources().getString(R.string.title_activity_settings)
-                , (dialog, which) -> {
-                    if (which == DialogInterface.BUTTON_POSITIVE) {
-                        goToManage();
-                    }
-                    else if (which == DialogInterface.BUTTON_NEGATIVE) {
-                        goToSetting();
-                    }
-                    else {
-                        goToHome();
-                    }
-                });
-    }
-
-    private void goToManage() {
-        Router.build("Manage").go(this);
-    }
-
-    private void goToSetting() {
-        Router.build("Setting").go(this);
+        goToHome();
     }
 
     private void goToHome() {

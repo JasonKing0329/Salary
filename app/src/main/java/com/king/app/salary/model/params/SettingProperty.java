@@ -3,7 +3,10 @@ package com.king.app.salary.model.params;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.google.gson.Gson;
 import com.king.app.salary.base.SalaryApplication;
+import com.king.app.salary.model.entity.Salary;
+import com.king.app.salary.model.entity.SalaryDetail;
 
 /**
  * Desc:
@@ -72,6 +75,23 @@ public class SettingProperty {
 
     public static boolean isEnableFingerPrint() {
         return getBoolean("enable_finger_print");
+    }
+
+    public static void setAutoFillSalary(long companyId, SalaryDetail detail) {
+        setLong("auto_fill_company", companyId);
+        setString("auto_fill_detail", new Gson().toJson(detail));
+    }
+
+    public static long getAutoFillCompany() {
+        return getLong("auto_fill_company");
+    }
+
+    public static SalaryDetail getAutoFillDetail() {
+        String json = getString("auto_fill_detail");
+        try {
+            return new Gson().fromJson(json, SalaryDetail.class);
+        } catch (Exception e){}
+        return null;
     }
 
 }

@@ -2,6 +2,7 @@ package com.king.app.salary.page.home;
 
 import android.arch.lifecycle.ViewModelProviders;
 
+import com.chenenyu.router.Router;
 import com.chenenyu.router.annotation.Route;
 import com.king.app.jactionbar.OnConfirmListener;
 import com.king.app.salary.R;
@@ -50,6 +51,9 @@ public class HomeActivity extends MvvmActivity<ActivityHomeBinding, HomeViewMode
                 case R.id.menu_save:
                     mModel.saveDatabase();
                     break;
+                case R.id.menu_setting:
+                    goToSetting();
+                    break;
             }
         });
         mBinding.actionbar.setOnConfirmListener(new OnConfirmListener() {
@@ -79,6 +83,10 @@ public class HomeActivity extends MvvmActivity<ActivityHomeBinding, HomeViewMode
                 return true;
             }
         });
+    }
+
+    private void goToSetting() {
+        Router.build("Setting").go(this);
     }
 
     private void showLoadFrom() {

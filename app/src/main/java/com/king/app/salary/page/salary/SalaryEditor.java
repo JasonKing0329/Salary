@@ -9,11 +9,15 @@ import android.widget.EditText;
 import com.chenenyu.router.Router;
 import com.king.app.salary.R;
 import com.king.app.salary.base.IFragmentHolder;
+import com.king.app.salary.base.SalaryApplication;
 import com.king.app.salary.databinding.FragmentContentSalaryEditorBinding;
+import com.king.app.salary.model.entity.Company;
 import com.king.app.salary.model.entity.Salary;
 import com.king.app.salary.model.entity.SalaryDetail;
 import com.king.app.salary.model.params.SalaryType;
+import com.king.app.salary.model.params.SettingProperty;
 import com.king.app.salary.page.company.CompanyActivity;
+import com.king.app.salary.page.company.CompanyItem;
 import com.king.app.salary.utils.FormatUtil;
 import com.king.app.salary.view.dialog.DatePickerFragment;
 import com.king.app.salary.view.dialog.DraggableContentFragment;
@@ -77,7 +81,14 @@ public class SalaryEditor extends DraggableContentFragment<FragmentContentSalary
             picker.show(getChildFragmentManager(), "DatePickerFragment");
         });
         
-        if (mSalary != null) {
+        if (mSalary == null) {
+            mCompanyId = SettingProperty.getAutoFillCompany();
+            mSalaryDetail = SettingProperty.getAutoFillDetail();
+            if (mSalaryDetail != null) {
+                bindDetail(mSalaryDetail);
+            }
+        }
+        else {
             mBinding.cbBonus.setChecked(mSalary.getType() == SalaryType.BONUS.ordinal());
             mBinding.etReceive.setText(FormatUtil.formatFloat(mSalary.getReceive()));
             mBinding.etTotal.setText(FormatUtil.formatFloat(mSalary.getTotal()));
@@ -87,34 +98,10 @@ public class SalaryEditor extends DraggableContentFragment<FragmentContentSalary
 
             if (mSalary.getCompany() != null) {
                 mCompanyId = mSalary.getCompanyId();
-                mBinding.tvCompany.setText(mSalary.getCompany().getName());
             }
             if (mSalary.getDetail() != null) {
                 mSalaryDetail = mSalary.getDetail();
-                mBinding.etBasic.setText(FormatUtil.formatFloat(mSalaryDetail.getBasic()));
-                mBinding.etTech.setText(FormatUtil.formatFloat(mSalaryDetail.getTech()));
-                mBinding.etPerformance.setText(FormatUtil.formatFloat(mSalaryDetail.getPerformance()));
-                mBinding.etSupply.setText(FormatUtil.formatFloat(mSalaryDetail.getSupply()));
-                mBinding.etOvertime.setText(FormatUtil.formatFloat(mSalaryDetail.getOvertime()));
-                mBinding.etAllowancePhone.setText(FormatUtil.formatFloat(mSalaryDetail.getAllowancePhone()));
-                mBinding.etAllowanceFood.setText(FormatUtil.formatFloat(mSalaryDetail.getAllowanceFood()));
-                mBinding.etAllowanceSeason.setText(FormatUtil.formatFloat(mSalaryDetail.getAllowanceSeason()));
-                mBinding.etTax.setText(FormatUtil.formatFloat(mSalaryDetail.getTax()));
-                mBinding.etTotalToTax.setText(FormatUtil.formatFloat(mSalaryDetail.getTotalToTax()));
-                mBinding.etInsuranceHealth.setText(FormatUtil.formatFloat(mSalaryDetail.getInsuranceHealth()));
-                mBinding.etInsuranceJobless.setText(FormatUtil.formatFloat(mSalaryDetail.getInsuranceJobless()));
-                mBinding.etInsuranceHugeMedical.setText(FormatUtil.formatFloat(mSalaryDetail.getInsuranceHugeMedical()));
-                mBinding.etInsurancePension.setText(FormatUtil.formatFloat(mSalaryDetail.getInsurancePension()));
-                mBinding.etHousingFund.setText(FormatUtil.formatFloat(mSalaryDetail.getHousingFund()));
-                mBinding.etReceiveAllowanceless.setText(FormatUtil.formatFloat(mSalaryDetail.getReceiveAllowanceLess()));
-                mBinding.etOtherRaise.setText(FormatUtil.formatFloat(mSalaryDetail.getExtraRaise()));
-                if (!TextUtils.isEmpty(mSalaryDetail.getExtraRaiseDesc())) {
-                    mBinding.etOtherRaiseDesc.setText(mSalaryDetail.getExtraRaiseDesc());
-                }
-                mBinding.etOtherDrop.setText(FormatUtil.formatFloat(mSalaryDetail.getExtraDrop()));
-                if (!TextUtils.isEmpty(mSalaryDetail.getExtraDropDesc())) {
-                    mBinding.etOtherDropDesc.setText(mSalaryDetail.getExtraDropDesc());
-                }
+                bindDetail(mSalaryDetail);
             }
         }
 
@@ -125,6 +112,37 @@ public class SalaryEditor extends DraggableContentFragment<FragmentContentSalary
             }
             dismissAllowingStateLoss();
         });
+
+        if (mCompanyId != -1) {
+            mModel.loadCompany(mCompanyId);
+        }
+    }
+
+    private void bindDetail(SalaryDetail detail) {
+        mBinding.etBasic.setText(FormatUtil.formatFloat(detail.getBasic()));
+        mBinding.etTech.setText(FormatUtil.formatFloat(detail.getTech()));
+        mBinding.etPerformance.setText(FormatUtil.formatFloat(detail.getPerformance()));
+        mBinding.etSupply.setText(FormatUtil.formatFloat(detail.getSupply()));
+        mBinding.etOvertime.setText(FormatUtil.formatFloat(detail.getOvertime()));
+        mBinding.etAllowancePhone.setText(FormatUtil.formatFloat(detail.getAllowancePhone()));
+        mBinding.etAllowanceFood.setText(FormatUtil.formatFloat(detail.getAllowanceFood()));
+        mBinding.etAllowanceSeason.setText(FormatUtil.formatFloat(detail.getAllowanceSeason()));
+        mBinding.etTax.setText(FormatUtil.formatFloat(detail.getTax()));
+        mBinding.etTotalToTax.setText(FormatUtil.formatFloat(detail.getTotalToTax()));
+        mBinding.etInsuranceHealth.setText(FormatUtil.formatFloat(detail.getInsuranceHealth()));
+        mBinding.etInsuranceJobless.setText(FormatUtil.formatFloat(detail.getInsuranceJobless()));
+        mBinding.etInsuranceHugeMedical.setText(FormatUtil.formatFloat(detail.getInsuranceHugeMedical()));
+        mBinding.etInsurancePension.setText(FormatUtil.formatFloat(detail.getInsurancePension()));
+        mBinding.etHousingFund.setText(FormatUtil.formatFloat(detail.getHousingFund()));
+        mBinding.etReceiveAllowanceless.setText(FormatUtil.formatFloat(detail.getReceiveAllowanceLess()));
+        mBinding.etOtherRaise.setText(FormatUtil.formatFloat(detail.getExtraRaise()));
+        if (!TextUtils.isEmpty(detail.getExtraRaiseDesc())) {
+            mBinding.etOtherRaiseDesc.setText(detail.getExtraRaiseDesc());
+        }
+        mBinding.etOtherDrop.setText(FormatUtil.formatFloat(detail.getExtraDrop()));
+        if (!TextUtils.isEmpty(detail.getExtraDropDesc())) {
+            mBinding.etOtherDropDesc.setText(detail.getExtraDropDesc());
+        }
     }
 
     /**
@@ -217,6 +235,7 @@ public class SalaryEditor extends DraggableContentFragment<FragmentContentSalary
         mSalary.setDeduction(mSalary.getTotal() - mSalary.getReceive());
 
         mModel.insertOrUpdate(mSalary, mSalaryDetail);
+        SettingProperty.setAutoFillSalary(mSalary.getCompanyId(), mSalaryDetail);
     }
 
     public interface OnUpdateListener {

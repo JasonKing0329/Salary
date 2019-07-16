@@ -33,7 +33,7 @@ public class DBExporter {
 
 		Calendar calendar = Calendar.getInstance();
 		StringBuffer target = new StringBuffer();
-		target.append(AppConfig.APP_DIR_HISTORY).append("/roles_");
+		target.append(AppConfig.APP_DIR_HISTORY).append("/salary_");
 		target.append(calendar.get(Calendar.YEAR)).append("_");
 		target.append(calendar.get(Calendar.MONTH) + 1).append("_");
 		target.append(calendar.get(Calendar.DAY_OF_MONTH)).append("_");
