@@ -56,39 +56,24 @@ public class CompanyActivity extends MvvmActivity<ActivityCompanyBinding, Compan
                     break;
             }
         });
-        mBinding.actionbar.setOnConfirmListener(new OnConfirmListener() {
-            @Override
-            public boolean disableInstantDismissConfirm() {
-                return true;
+        mBinding.actionbar.setOnConfirmListener(actionId -> {
+            switch (actionId) {
+                case R.id.menu_delete:
+                    if (adapter != null) {
+                        adapter.setSelectMode(true);
+                        adapter.notifyDataSetChanged();
+                    }
+                    mModel.deleteSelectedItems();
+                    break;
             }
-
-            @Override
-            public boolean disableInstantDismissCancel() {
-                return false;
+            return false;
+        });
+        mBinding.actionbar.setOnCancelListener(actionId -> {
+            if (adapter != null) {
+                adapter.setSelectMode(false);
+                adapter.notifyDataSetChanged();
             }
-
-            @Override
-            public boolean onConfirm(int actionId) {
-                switch (actionId) {
-                    case R.id.menu_delete:
-                        if (adapter != null) {
-                            adapter.setSelectMode(true);
-                            adapter.notifyDataSetChanged();
-                        }
-                        mModel.deleteSelectedItems();
-                        break;
-                }
-                return false;
-            }
-
-            @Override
-            public boolean onCancel(int actionId) {
-                if (adapter != null) {
-                    adapter.setSelectMode(false);
-                    adapter.notifyDataSetChanged();
-                }
-                return true;
-            }
+            return true;
         });
         mBinding.rvItems.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mBinding.rvItems.addItemDecoration(new RecyclerView.ItemDecoration() {

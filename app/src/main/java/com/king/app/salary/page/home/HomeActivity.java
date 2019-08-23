@@ -56,32 +56,17 @@ public class HomeActivity extends MvvmActivity<ActivityHomeBinding, HomeViewMode
                     break;
             }
         });
-        mBinding.actionbar.setOnConfirmListener(new OnConfirmListener() {
-            @Override
-            public boolean disableInstantDismissConfirm() {
-                return true;
+        mBinding.actionbar.setOnConfirmListener(actionId -> {
+            switch (actionId) {
+                case R.id.menu_delete:
+                    ftSalaryList.deleteSelectedItems();
+                    break;
             }
-
-            @Override
-            public boolean disableInstantDismissCancel() {
-                return false;
-            }
-
-            @Override
-            public boolean onConfirm(int actionId) {
-                switch (actionId) {
-                    case R.id.menu_delete:
-                        ftSalaryList.deleteSelectedItems();
-                        break;
-                }
-                return false;
-            }
-
-            @Override
-            public boolean onCancel(int actionId) {
-                ftSalaryList.setSelectionMode(false);
-                return true;
-            }
+            return false;
+        });
+        mBinding.actionbar.setOnCancelListener(actionId -> {
+            ftSalaryList.setSelectionMode(false);
+            return true;
         });
     }
 
