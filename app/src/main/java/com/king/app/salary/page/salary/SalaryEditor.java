@@ -85,6 +85,8 @@ public class SalaryEditor extends DraggableContentFragment<FragmentContentSalary
             mCompanyId = SettingProperty.getAutoFillCompany();
             mSalaryDetail = SettingProperty.getAutoFillDetail();
             if (mSalaryDetail != null) {
+                // auto fill data include id
+                mSalaryDetail.setId(null);
                 bindDetail(mSalaryDetail);
             }
         }

@@ -55,6 +55,17 @@ public class FormatUtil {
      * 金额转换
      *
      * @param beforeFloat 转换前的金额
+     * @return 转换后的金额 小数点后保留两位 XX.00
+     */
+    public static String pointZZ(float beforeFloat) {
+        NumberFormat formatter = new DecimalFormat("####0.00");
+        return formatter.format(beforeFloat) + "";
+    }
+
+    /**
+     * 金额转换
+     *
+     * @param beforeFloat 转换前的金额
      * @return 转换后的金额 小数点后保留一位 XX.0
      */
     public static String pointZ(Double beforeFloat) {
@@ -74,7 +85,7 @@ public class FormatUtil {
     }
 
     public static String formatFloat(float number) {
-        return formatNumber(pointZ(number));
+        return formatNumber(pointZZ(number));
     }
 
     /**
